@@ -3,3 +3,8 @@ This file will contain the code to a neural netword coded solely from numpy and 
 to help with the visualization and depiction of imported data 
 
 """
+def neuralNetwork():
+    """
+    Code for the neural network
+    """
+    pass
