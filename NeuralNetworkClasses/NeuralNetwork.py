@@ -26,15 +26,16 @@ class NeuralNetwork():
                 inputToLayer = layer.getLayerOutput()
             self.output = self.layers[len(self.layers) - 1].getLayerOutput()
 
-    def backwardPropagate(self, trueValue:list, learningRate):
-        previousLayer = None
-        previousGradient = None
-        dWeight = None
-        dBias = None
-        inputError, weightsError, biasError = self.layers[len(self.layers) - 1].backwardPropagate(trueValue, self.output)
-        for index, layer in enumerate(reversed(self.layers)):
-            inputError, weightsError, biasError = layer.backwardPropagate(inputError)
-            
+    # def backwardPropagate(self, trueValue:list, learningRate):
+    #     # previousLayer = None
+    #     # previousGradient = None
+    #     dWeight = None
+    #     dBias = None
+    #     inputError, weightsError, biasError = self.layers[len(self.layers) - 1].backwardPropagate(trueValue, self.output)
+    #     for index, layer in enumerate(reversed(self.layers)):
+    #         inputError, weightsError, biasError = layer.backwardPropagate(inputError, layer.getLayerOutput())
+    #         layer.updateLayerParameters(weightsError, biasError, learningRate)
+        
 
         # for index, layer in enumerate(reversed(self.layers)): #need to go in reverse, do the nth layer before doing the nth-1 layer
         #     if index - 1 < 0:
@@ -44,6 +45,9 @@ class NeuralNetwork():
         #         previousGradient, dWeight, dBias = layer.hiddenBackwardPropagate(previousWeights, previousGradient)
         #     previousLayer = layer
         #     layer.updateLayerParameters(dWeight, dBias, learningRate)
+
+    # def backwardPropagate(self, error, learningRate):
+
 
     def loss(self, expected:list):
         predictedValues = np.array(self.output)
@@ -61,12 +65,20 @@ class NeuralNetwork():
             for j in range(len(inputs)):
                 self.forwardPropagate(inputs[j])
                 # costHistory.append(self.loss(expectedOutput[j]))
-                self.backwardPropagate(expectedOutput[j], learningRate)
+                error = lossPrime(expectedOutput[j], self.output)
+                for layer in reversed(self.layers):
+                    error = layer.backwardPropagate(error, learningRate)
         # print(costHistory)
 
     def predict(self, inputs):
         self.forwardPropagate(inputs)
         return self.output
+    
+# def lossPrime(trueValue:list, predictedValue:list):
+#     return ([2*predictedValue[i]-trueValue[i] for i in range(min(len(trueValue), len(predictedValue)))])
+#     # return 2*(np.array(predictedValue)-np.array(trueValue))/len(trueValue)
+
+
 
 x_train = [[0,0], [0,1], [1,0], [1,1]]
 y_train = [[0], [1], [1], [0]]

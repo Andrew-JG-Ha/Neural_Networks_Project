@@ -16,7 +16,7 @@ class Layer():
             self.neurons.append(Neuron(prevLayerNeurons, i))
             self.layerOutputs.append(self.neurons[i].getNeuronOutput())
             self.layerValues.append(self.neurons[i].getNeuronValue())
-    
+
     def forwardPropagate(self, inputs:list) -> None:
         for index, neuron in enumerate(self.neurons):
             value = np.dot(neuron.weights, inputs) + neuron.bias
@@ -42,17 +42,26 @@ class Layer():
     #     dBias = np.sum(hiddenGradient, axis = 0, keepdims=False)
     #     return hiddenGradient, dWeight, dBias
 
-    def backwardPropagate(self, trueValue, predictedValue):
-        error = lossPrime(trueValue, predictedValue)
-        currentLayerWeights = [neuron.getWeights() for neuron in self.neurons]
-        inputError = np.dot(error, np.transpose(currentLayerWeights))
-        weightsError = np.dot(error, np.transpose(self.inputs))
-        biasError = np.sum(inputError)
-        return inputError, weightsError, biasError
+    # def backwardPropagate(self, trueValue, predictedValue):
+    #     error = lossPrime(trueValue, predictedValue)
+    #     currentLayerWeights = [neuron.getWeights() for neuron in self.neurons]
+    #     inputError = np.dot(error, currentLayerWeights) # error here
+    #     weightsError = np.dot(np.transpose([error]), [self.inputs] )
+    #     biasError = np.sum(inputError)
+    #     return inputError, weightsError, biasError
+    
+    # def backwardPropagate(self, outputError, learningRate):
+    #     activatedDerivError = activationFunctionDeriv(self.activationType, self.inputs) * outputError
+    #     layerWeights = [neuron.getWeights() for neuron in self.neurons]
+
+    #     inputError = np.dot(activatedDerivError, np.transpose(layerWeights))
+    #     weightsError = np.dot(np.transpose(self.inputs), outputError)
+    #     test = 1
+    #     return inputError
 
     def getLayerOutput(self) -> list:
         return self.layerOutputs
-    
+
     def getLayerValues(self) -> list:
         return self.layerValues
 
@@ -87,9 +96,6 @@ def activationFunctionDeriv(activationType, neuronValue):
     result = result
     return result
 
-def lossPrime(trueValue, predictedValue):
-    return 2*(predictedValue-trueValue)/trueValue.size
-
 def sigmoid(x):
     return 1/(1+np.exp(-x))
 
@@ -101,7 +107,6 @@ def leakyReLU(x):
 
 def tanh(x):
     return math.tanh(x)
-
 
 def sigmoidDeriv(x):
     return sigmoid(x) * (1 - sigmoid(x))
