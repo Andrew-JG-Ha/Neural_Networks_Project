@@ -5,41 +5,99 @@ import math
 class Neuron():
     """
     Neuron class
+    - the lowest level of a neural network
+    - contains a structure and 
     """
-    def __init__(self, numberOfWeights:int, seed = 105) -> None:
+    def __init__(self, numberOfWeights:int, seed = None) -> None:
         np.random.seed(seed)
-        self.weights = generateWeights(numberOfWeights)
+        self.weights = generateWeights(numberOfWeights, seed)
         self.bias = np.random.random()*0.1
+        self.neuronInput = None
         self.neuronValue = None
         self.neuronOutput = None
 
-    def updateAllWeights(self, newWeights:list) -> None:
+    def updateWeights(self, newWeights:list) -> None:
         self.weights = newWeights
-
     def updateBias(self, newBias) -> None:
         self.bias = newBias
-
-    def getNeuronValue(self):
-        return self.neuronValue
-    
-    def updateNeuronValue(self, newNeuronValue):
-        self.neuronValue = newNeuronValue
+    def updateNeuronInput(self, neuronInput) -> None:
+        self.neuronInput = neuronInput
+    def updateNeuronValue(self, neuronValue) -> None:
+        self.neuronValue = neuronValue
+    def updateNeuronOutput(self, newNeuronOutput) -> None:
+        self.neuronOutput = newNeuronOutput
 
     def getNeuronOutput(self):
         return self.neuronOutput
-    
-    def updateNeuronOutput(self, newNeuronOutput):
-        self.neuronOutput = newNeuronOutput
-
+    def getNeuronValue(self):
+        return self.neuronValue
     def getWeights(self):
         return self.weights
+    def getBias(self):
+        return self.bias
 
-def generateWeights(numberOfWeights) -> list:
+    def activate(self, activationType) -> None:
+        if activationType == "Step":
+            self.neuronOutput = unitStep(self.neuronValue)
+        elif activationType == "Sigmoid":
+            self.neuronOutput = sigmoid(self.neuronValue)
+        elif activationType == "Tanh":
+            self.neuronOutput = tanh(self.neuronValue)
+        elif activationType == "ReLu":
+            self.neuronOutput = ramp(self.neuronValue)
+
+def generateWeights(numberOfWeights, seed = None) -> list:
     output = list()
+    np.random.seed(seed)
     for i in range(0, numberOfWeights):
         output.append(np.random.random()*0.1)
     return output
 
+"""
+activation functions
+"""
+def unitStep(input):
+    if (input < 0):
+        return 0
+    else:
+        return 1
+def sigmoid(input):
+    activated = (1/(1+np.exp(-input)))
+    return activated
+def tanh(input):
+    activated = (np.exp(2*input) - 1) / (np.exp(2*input) + 1)
+    return activated
+def relu(input, alpha = 0.01):
+    if (input < 0):
+        return alpha*(np.exp(input) - 1)
+    else:
+        return input
+
+"""
+activation derivative functions
+"""
+def unitStepPrime(input):
+    if (input == 0):
+        return 1
+    else:
+        return 0
+def sigmoidPrime(input):
+    activated = (np.exp(-input)) / (1+np.exp(-input))^2
+    return activated
+def tanhPrime(input):
+    activated = (4*np.exp(-2*input)) / (1 + np.exp(-2*input))^2
+    return activated
+def reluPrime(input, alpha = 0.01):
+    if (input < 0):
+        return alpha * np.exp(input)
+    else:
+        return 1
+
 # test that the Neuron is working as intended:
-def testNeuron():
-    test = Neuron(4, 0, 99)
+# def testNeuron():
+#     test = Neuron(4, 99)
+#     print(test.getNeuronOutput)
+#     print(test.getNeuronValue())
+#     print(test.getWeights)
+
+# testNeuron()
