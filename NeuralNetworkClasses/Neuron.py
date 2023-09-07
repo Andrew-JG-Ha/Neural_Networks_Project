@@ -15,6 +15,7 @@ class Neuron():
         self.neuronInput = None
         self.neuronValue = None
         self.neuronOutput = None
+        self.neuronPrime = None
 
     def updateWeights(self, newWeights:list) -> None:
         self.weights = newWeights
@@ -35,6 +36,8 @@ class Neuron():
         return self.weights
     def getBias(self):
         return self.bias
+    def getPrimeValue(self):
+        return self.neuronPrime
 
     def activate(self, activationType) -> None:
         if activationType == "Step":
@@ -44,7 +47,17 @@ class Neuron():
         elif activationType == "Tanh":
             self.neuronOutput = tanh(self.neuronValue)
         elif activationType == "ReLu":
-            self.neuronOutput = ramp(self.neuronValue)
+            self.neuronOutput = relu(self.neuronValue)
+
+    def activatePrime(self, activationType) -> None:
+        if activationType == "Step":
+            self.neuronPrime = unitStepPrime(self.neuronValue)
+        elif activationType == "Sigmoid":
+            self.neuronPrime = sigmoidPrime(self.neuronValue)
+        elif activationType == "Tanh":
+            self.neuronPrime = tanhPrime(self.neuronValue)
+        elif activationType == "ReLu":
+            self.neuronPrime = reluPrime(self.neuronValue)
 
 def generateWeights(numberOfWeights, seed = None) -> list:
     output = list()
@@ -82,7 +95,7 @@ def unitStepPrime(input):
     else:
         return 0
 def sigmoidPrime(input):
-    activated = (np.exp(-input)) / (1+np.exp(-input))^2
+    activated = (np.exp(-input)) / pow(1+np.exp(-input), 2)
     return activated
 def tanhPrime(input):
     activated = (4*np.exp(-2*input)) / (1 + np.exp(-2*input))^2
