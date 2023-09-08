@@ -3,8 +3,8 @@ class Layer():
     """
     Layer of Neurons 
     """
-    def __init__(self, numberOfNeurons:int, activationType:str, learningRate:float,  seed = None) -> None:
-        self.layer = [Neuron(numberOfNeurons, seed) for neuron in range(0, numberOfNeurons)]
+    def __init__(self, numberOfPriorLayerNeurons:int, numberOfNeurons:int, activationType:str, learningRate:float,  seed = None) -> None:
+        self.layer = [Neuron(numberOfPriorLayerNeurons, seed) for neuron in range(0, numberOfNeurons)]
         self.layerInput = []
         self.activationType = activationType
         self.learningRate = learningRate
@@ -19,12 +19,14 @@ class Layer():
 
     def setLayerInput(self, newInputs:list):
         self.layerInput = newInputs
-        for neuron, input in zip(self.layer, newInputs):
-            neuron.updateNeuronInput(input)
+        for neuron in self.layer:
+            neuron.updateNeuronInput(newInputs)
 
     def getActivationType(self):
         return self.activationType
 
+    def getLayerInput(self):
+        return self.layerInput
 
 # test that the Layer class is working as intended
 def testLayer():

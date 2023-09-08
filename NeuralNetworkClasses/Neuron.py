@@ -12,7 +12,7 @@ class Neuron():
         np.random.seed(seed)
         self.weights = generateWeights(numberOfWeights, seed)
         self.bias = np.random.random()*0.1
-        self.neuronInput = None
+        self.neuronInput = []
         self.neuronValue = None
         self.neuronOutput = None
         self.neuronPrime = None
