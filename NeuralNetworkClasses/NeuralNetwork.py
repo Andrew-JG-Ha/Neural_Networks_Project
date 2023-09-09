@@ -75,11 +75,16 @@ class NeuralNetwork():
                     dError_dW_Descending.append(msePrime * neuronInput)
                 prev.append(msePrime)
             else:
+                prevValues = []
                 for prevIndex in range(0, len(prev)):
-                    prev = [prev[prevIndex]*weight for weight in prevNeuronWeights]
+                    prev = [prev[prevIndex]*weight for weight in prevNeuronWeights] # [prev[0] * W1, W2, W3 ..., prev[1] * W1, W2, W3, ...]
+                    for prevValue in prev:
+                        prevValues.append(prevValue)
+
                 for prevIndex in range(0, len(prev)):
                     for inputIndex in range(0, len(self.network[layerIndex].getLayerInput())):
                         dError_dW_Descending.append(prev[prevIndex] * prevNeuronOutputs[inputIndex])
+                
                 """
                 currPrevLength = len(prev)
                 for prevIndex in range(prevSize, currPrevLength):
