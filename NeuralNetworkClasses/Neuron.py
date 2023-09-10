@@ -11,14 +11,15 @@ class Neuron():
     def __init__(self, numberOfWeights:int, seed = None) -> None:
         np.random.seed(seed)
         self.weights = generateWeights(numberOfWeights, seed)
-        self.bias = np.random.random()*0.1
+        self.bias = 0 # np.random.random()*0.1
         self.neuronInput = []
         self.neuronValue = None
         self.neuronOutput = None
         self.neuronPrime = None
 
     def updateWeights(self, newWeights:list) -> None:
-        self.weights = newWeights
+        for weightIndex in range(0, len(newWeights)):
+            self.weights[weightIndex] = newWeights[weightIndex]
     def updateBias(self, newBias) -> None:
         self.bias = newBias
     def updateNeuronInput(self, neuronInput) -> None:
@@ -98,7 +99,7 @@ def sigmoidPrime(input):
     activated = (np.exp(-input)) / pow(1+np.exp(-input), 2)
     return activated
 def tanhPrime(input):
-    activated = (4*np.exp(-2*input)) / (1 + np.exp(-2*input))^2
+    activated = (4*np.exp(-2*input)) / pow((1 + np.exp(-2*input)), 2)
     return activated
 def reluPrime(input, alpha = 0.01):
     if (input < 0):
