@@ -1,40 +1,51 @@
+"""
+http://neuralnetworksanddeeplearning.com/chap2.html
+https://towardsdatascience.com/math-neural-network-from-scratch-in-python-d6da9f29ce65
+https://www.youtube.com/watch?v=0e0z28wAWfg
+https://builtin.com/machine-learning/backpropagation-neural-network
+https://www.youtube.com/watch?v=9RN2Wr8xvro
+"""
+
 from Layer import *
 
 class NeuralNetwork():
     """
     Network of Layers
     """
-    def __init__(self) -> None:
+    def __init__(self, numInputs:int) -> None:
         self.network = []
-        self.networkSize = 0
-        self.numNeurons = 0
+        self.network.append(Layer("Input", numInputs))
+        self.networkSize = 1
+        self.numNeurons = numInputs
 
-    def appendLayer(self, layerType:str, numberNeurons:int, numInputs:int = None, learningRate = 0.75, seed = None) -> None:
-        numIns = numInputs
-        if numIns == None and self.networkSize != 0:
-            numIns = len(self.network[self.networkSize - 1].layer)
-        newLayer = Layer(numIns, numberNeurons, layerType, learningRate, seed)
+    def appendLayer(self, layerType:str, numberNeurons:int, learningRate = 0.05, seed = None) -> None:
+        numIns = len(self.network[self.networkSize - 1].layer)
+        newLayer = HiddenLayer(layerType, numberNeurons, numIns, learningRate, seed)
         self.network.append(newLayer)
         self.networkSize = self.networkSize + 1
         self.numNeurons = self.numNeurons + numberNeurons
         if (self.networkSize > 1):
             for i in range(0, self.networkSize - 1):
-                self.network[i+1].setLayerInput([neuron.getNeuronOutput() for neuron in self.network[i].layer])
+                self.network[i+1].updateHiddenLayerInput([neuron.getNeuronOutput() for neuron in self.network[i].layer])
 
-    def forwardPropagate(self, input:list):
-        inputToLayer = input
+    def forwardPropagate(self, nnInput:list):
+        inputToLayer = nnInput
         neuronOutput = []
         layerOutput = []
-        for layerIndex in range(0, self.networkSize):
+        # first layer (input layer)
+        self.network[0].updateInputLayer(nnInput)
+        # hidden layers
+        for layerIndex in range(1, self.networkSize):
+            inputToLayer = [neuron.getNeuronOutput() for neuron in self.network[layerIndex - 1].layer]
+            self.network[layerIndex].updateHiddenLayerInput(inputToLayer)
             for neuron in self.network[layerIndex].layer:
                 for weight, neuronInput in zip(neuron.getWeights(), inputToLayer):
                     neuronOutput.append(weight*neuronInput)
                 neuron.updateNeuronValue(sum(neuronOutput) + neuron.getBias())
-                neuron.activate(self.network[layerIndex].activationType)
-                neuron.activatePrime(self.network[layerIndex].activationType)
+                neuron.activate(self.network[layerIndex].getLayerType())
+                neuron.activatePrime(self.network[layerIndex].getLayerType())
                 neuronOutput = []
             layerOutput = [neuron.getNeuronOutput() for neuron in self.network[layerIndex].layer]
-            self.network[layerIndex].setLayerInput(inputToLayer)
             if layerIndex < self.networkSize - 1:
                 inputToLayer = layerOutput
                 layerOutput = []
@@ -62,24 +73,43 @@ class NeuralNetwork():
     = prev[0] * W7 * W3 * I1 = prev[2] * W3 * I1
     """
     def backPropagateWeights(self, expectedValues, actualValues) -> None:
-        # outputLayer
-
-        # hiddenLayers
-
+        dError_dW_list = []
+        errorPropagate = []
+        # outputLayer - perform mean squared error
+        errorPropagate.append(self.backPropagateOutputLayer(expectedValues, actualValues, dError_dW_list))
+        # hiddenLayers - propagate the error until the first layer
+        
         # inputLayer
+
+        # update the weights
         NotImplementedError
 
-    def backPropagateOutputLayer(self, expectedValues, actualValues):
+    def backPropagateOutputLayer(self, expectedValues, actualValues, dError_dW_List:list):
         # Calculate the final layer's error
         msePrime = meanSquaredErrorPrime(expectedValues, actualValues) # dError/dPrediction = 2/n * (expected - actual)
         errors = [expected - actual for expected, actual in zip(expectedValues, actualValues)]
         outputLayerError = [msePrime * error for error in errors]
+        outputLayerWeights = [neuron.getWeights() for neuron in self.network[-1].layer]
+
         return outputLayerError
 
-    def backPropagateHiddenLayer(self, previousLayerError:list):
+    def backPropagateHiddenLayer(self, currentLayerIndex:int, previousLayerError:list, dError_dW_List:list):
         # Calculate a layer's dError/dWeight
-        
+        if (self.network[currentLayerIndex].layerType == "Input"):
+            return self.backPropagateInputLayer()
+        else:
+            # calculate the error at each layer
+            prevLayerError = previousLayerError
+            currLayerWeights = [neuron.getWeights() for layer in self.network[currentLayerIndex].layer for neuron in layer]
+            currLayerInputs = self.network[currentLayerIndex].getLayerInput()
+            length
+            for weight in currLayerWeights:
+                
+            self.backPropagateHiddenLayer(currentLayerIndex - 1, [], dError_dW_List)
+            
 
+    def backPropagateInputLayer(self, previousLayerError:list, dError_dW_List:list):
+        NotImplementedError
 
     # def backPropagateWeights(self, expectedValues, actualValues) -> None:
     #     # Calculate the final layer's error
@@ -138,19 +168,20 @@ def meanSquaredError(expectedValues:list, actualValues:list):
     return (1/len(expectedValues))*pow(sum([(actual-expected) for expected, actual in zip(expectedValues, actualValues)]), 2)
 
 def meanSquaredErrorPrime(expectedValues:list, actualValues:list):
-    return (2/len(expectedValues))*(sum([(actual-expected) for expected, actual in zip(expectedValues, actualValues)]))
+    return -(2/len(expectedValues))*(sum([(actual-expected) for expected, actual in zip(expectedValues, actualValues)]))
 
 def train(network:NeuralNetwork, input):
     NotImplementedError
 
 def test1():
-    test = NeuralNetwork()
-    test.appendLayer(layerType = "ReLu", numberNeurons = 2, numInputs = 2, learningRate = 0.75, seed = 105)
-    test.appendLayer(layerType = "ReLu", numberNeurons = 2, learningRate = 0.25)
-    test.appendLayer(layerType = "Sigmoid", numberNeurons = 1, learningRate = 0.5)
+    test = NeuralNetwork(2)
+    test.appendLayer(layerType = "ReLu", numberNeurons = 2, seed = 105)
+    test.appendLayer(layerType = "ReLu", numberNeurons = 2)
+    test.appendLayer(layerType = "Sigmoid", numberNeurons = 1)
+
     for i in range(0, 100):
         res = test.forwardPropagate([1,2])
-        test.backPropagateWeights([5], res)
+        # test.backPropagateWeights([5], res)
     res = test.forwardPropagate([1,2])
 
 

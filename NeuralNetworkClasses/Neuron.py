@@ -3,18 +3,31 @@ import random
 import math
 
 class Neuron():
+    def __init__(self) -> None:
+        self.neuronInput = []
+        self.neuronOutput = None
+
+    def updateNeuronInput(self, neuronInput) -> None:
+        self.neuronInput = neuronInput
+
+    def updateNeuronOutput(self, newNeuronOutput) -> None:
+        self.neuronOutput = newNeuronOutput
+
+    def getNeuronOutput(self):
+        return self.neuronOutput
+
+class HiddenNeuron(Neuron):
     """
     Neuron class
     - the lowest level of a neural network
     - contains a structure and 
     """
     def __init__(self, numberOfWeights:int, seed = None) -> None:
+        super().__init__()
         np.random.seed(seed)
         self.weights = generateWeights(numberOfWeights, seed)
         self.bias = 0 # np.random.random()*0.1
-        self.neuronInput = []
         self.neuronValue = None
-        self.neuronOutput = None
         self.neuronPrime = None
 
     def updateWeights(self, newWeights:list) -> None:
@@ -22,15 +35,9 @@ class Neuron():
             self.weights[weightIndex] = newWeights[weightIndex]
     def updateBias(self, newBias) -> None:
         self.bias = newBias
-    def updateNeuronInput(self, neuronInput) -> None:
-        self.neuronInput = neuronInput
     def updateNeuronValue(self, neuronValue) -> None:
         self.neuronValue = neuronValue
-    def updateNeuronOutput(self, newNeuronOutput) -> None:
-        self.neuronOutput = newNeuronOutput
 
-    def getNeuronOutput(self):
-        return self.neuronOutput
     def getNeuronValue(self):
         return self.neuronValue
     def getWeights(self):
@@ -106,12 +113,3 @@ def reluPrime(input, alpha = 0.01):
         return alpha * np.exp(input)
     else:
         return 1
-
-# test that the Neuron is working as intended:
-# def testNeuron():
-#     test = Neuron(4, 99)
-#     print(test.getNeuronOutput)
-#     print(test.getNeuronValue())
-#     print(test.getWeights)
-
-# testNeuron()
