@@ -73,12 +73,12 @@ class NeuralNetwork():
     = prev[0] * W7 * W3 * I1 = prev[2] * W3 * I1
     """
     def backPropagateWeights(self, expectedValues, actualValues) -> None:
-        dError_dW_list = []
+        dError_dW_List = []
         errorPropagate = []
         # outputLayer - perform mean squared error
-        errorPropagate.append(self.backPropagateOutputLayer(expectedValues, actualValues, dError_dW_list))
+        errorPropagate.append(self.backPropagateOutputLayer(expectedValues, actualValues, dError_dW_List))
         # hiddenLayers - propagate the error until the first layer
-        
+        self.backPropagateHiddenLayer(len(self.network) - 2, errorPropagate[0], dError_dW_List)
         # inputLayer
 
         # update the weights
@@ -90,7 +90,6 @@ class NeuralNetwork():
         errors = [expected - actual for expected, actual in zip(expectedValues, actualValues)]
         outputLayerError = [msePrime * error for error in errors]
         outputLayerWeights = [neuron.getWeights() for neuron in self.network[-1].layer]
-
         return outputLayerError
 
     def backPropagateHiddenLayer(self, currentLayerIndex:int, previousLayerError:list, dError_dW_List:list):
@@ -99,13 +98,34 @@ class NeuralNetwork():
             return self.backPropagateInputLayer()
         else:
             # calculate the error at each layer
+            numCurrLayerNeurons = len(self.network[currentLayerIndex].layer)
+            # numPrevLayerNeurons = len(self.network[currentLayerIndex + 1].layer)
             prevLayerError = previousLayerError
-            currLayerWeights = [neuron.getWeights() for layer in self.network[currentLayerIndex].layer for neuron in layer]
-            currLayerInputs = self.network[currentLayerIndex].getLayerInput()
-            length
-            for weight in currLayerWeights:
-                
-            self.backPropagateHiddenLayer(currentLayerIndex - 1, [], dError_dW_List)
+            prevLayerWeights = [neuron.getWeights() for neuron in self.network[currentLayerIndex + 1].layer]
+            currLayerActivationPrime = [neuron.getPrimeValue() for neuron in self.network[currentLayerIndex].layer]
+            # dError/dLayer[1+1] = ((w[l] * dError/dLayer[l]) dot actPrime[l+1])
+            allWeights = []
+            for neuronWeights in prevLayerWeights:
+                allWeights = allWeights + neuronWeights
+
+            # transposing the weights
+            transposedWeights = []
+            for weightIndex in range(0, numCurrLayerNeurons):
+                currNeuronWeights = []
+                for index in range(weightIndex, len(allWeights), numCurrLayerNeurons):
+                    currNeuronWeights.append(allWeights[index])
+                transposedWeights.append(currNeuronWeights)
+            weight_dError_list = []
+            for transposedWeight in transposedWeights:
+                weight_dError = []
+                for weight, error in zip(transposedWeight, prevLayerError):
+                    weight_dError.append(weight*error)
+                weight_dError_list.append(sum(weight_dError))
+            dError_dW = []
+            for actPrime, weight_dError in zip(currLayerActivationPrime, weight_dError_list):
+                dError_dW.append(actPrime * weight_dError)
+            dError_dW_List.append(dError_dW)
+            self.backPropagateHiddenLayer(currentLayerIndex - 1, dError_dW_List[-1], dError_dW_List)
             
 
     def backPropagateInputLayer(self, previousLayerError:list, dError_dW_List:list):
@@ -181,7 +201,7 @@ def test1():
 
     for i in range(0, 100):
         res = test.forwardPropagate([1,2])
-        # test.backPropagateWeights([5], res)
+        test.backPropagateWeights([5], res)
     res = test.forwardPropagate([1,2])
 
 
