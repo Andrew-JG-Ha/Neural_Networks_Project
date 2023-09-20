@@ -26,7 +26,7 @@ class HiddenNeuron(Neuron):
         super().__init__()
         np.random.seed(seed)
         self.weights = generateWeights(numberOfWeights, seed)
-        self.bias = 0 # np.random.random()*0.1
+        self.bias = np.random.random()*0.1
         self.neuronValue = None
         self.neuronPrime = None
 
