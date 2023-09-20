@@ -131,22 +131,12 @@ class NeuralNetwork():
                 error_propagate.append(sum([weight*error for weight, error in zip(transposedWeights[weightIndex], prevLayerError)]))
             dError_dH_List.append(error_propagate)
 
-            # weight_dError_list = []
-            # for transposedWeight in transposedWeights:
-            #     weight_dError = []
-            #     for weight, error in zip(transposedWeight, prevLayerError):
-            #         weight_dError.append(weight*error)
-            #     weight_dError_list.append(weight_dError)
             dError_dW = []
             for actPrime in currLayerActivationPrime:
                 for prevError in prevLayerError:
                     dError_dW.append(actPrime * prevError)
             dError_dW_List.append(dError_dW)
 
-            # for weight_dError in weight_dError_list:
-            #     for actPrime, prevError in zip(currLayerActivationPrime, prevLayerError):
-            #         dError_dW.append(actPrime * prevError)
-            # dError_dW_List.append(dError_dW)
         return dError_dW_List, dError_dH_List
             
     def updateWeights(self, dError_dW_List):
@@ -180,7 +170,7 @@ def meanAbsoluteError(expectedValues:list, actualValues:list):
 def rootMeanSquareError(expectedValues:list, actualValues:list):
     return pow(meanSquaredError(expectedValues, actualValues), 1/2)
 
-def train(network:NeuralNetwork, input):
+def train(network:NeuralNetwork, traningData):
     NotImplementedError
 
 def test1():
@@ -188,13 +178,13 @@ def test1():
     test.appendLayer(layerType = "ReLu", numberNeurons = 2)
     test.appendLayer(layerType = "ReLu", numberNeurons = 4)
     test.appendLayer(layerType = "ReLu", numberNeurons = 4)
-    test.appendLayer(layerType = "ReLu", numberNeurons = 4)
-    test.appendLayer(layerType = "ReLu", numberNeurons = 4)
+    test.appendLayer(layerType = "Sigmoid", numberNeurons = 4)
+    test.appendLayer(layerType = "Sigmoid", numberNeurons = 4)
     test.appendLayer(layerType = "Sigmoid", numberNeurons = 2)
 
     for i in range(0, 5000):
         res = test.forwardPropagate([1,1])
-        test.backPropagateWeights([1,0], res)
+        test.backPropagateWeights([0,1], res)
     res = test.forwardPropagate([1,1])
 
 
