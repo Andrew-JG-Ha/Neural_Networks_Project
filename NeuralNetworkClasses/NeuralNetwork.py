@@ -30,7 +30,7 @@ class NeuralNetwork():
 
     def forwardPropagate(self, nnInput:list):
         inputToLayer = nnInput
-        neuronOutput = []
+
         layerOutput = []
         # first layer (input layer)
         self.network[0].updateInputLayer(nnInput)
@@ -39,11 +39,12 @@ class NeuralNetwork():
             inputToLayer = [neuron.getNeuronOutput() for neuron in self.network[layerIndex - 1].layer]
             self.network[layerIndex].updateHiddenLayerInput(inputToLayer)
             for neuron in self.network[layerIndex].layer:
+                neuronOutput = 0
                 for weight, neuronInput in zip(neuron.getWeights(), inputToLayer):
-                    neuronOutput.append(weight*neuronInput)
-                neuron.updateNeuronValue(sum(neuronOutput) + neuron.getBias())
+                    neuronOutput = neuronOutput + weight*neuronInput
+                neuronOutput = neuronOutput + neuron.getBias()
+                neuron.updateNeuronValue(neuronOutput)
                 neuron.activate(self.network[layerIndex].getLayerType())
-                neuron.activatePrime(self.network[layerIndex].getLayerType())
                 neuronOutput = []
             layerOutput = [neuron.getNeuronOutput() for neuron in self.network[layerIndex].layer]
             if layerIndex < self.networkSize - 1:
@@ -175,11 +176,8 @@ def train(network:NeuralNetwork, traningData):
 
 def test1():
     test = NeuralNetwork(2)
+    test.appendLayer(layerType = "ReLu", numberNeurons = 1)
     test.appendLayer(layerType = "ReLu", numberNeurons = 2)
-    test.appendLayer(layerType = "ReLu", numberNeurons = 4)
-    test.appendLayer(layerType = "ReLu", numberNeurons = 4)
-    test.appendLayer(layerType = "Sigmoid", numberNeurons = 4)
-    test.appendLayer(layerType = "Sigmoid", numberNeurons = 4)
     test.appendLayer(layerType = "Sigmoid", numberNeurons = 2)
 
     for i in range(0, 5000):

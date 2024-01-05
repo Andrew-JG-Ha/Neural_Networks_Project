@@ -3,27 +3,10 @@ import random
 import math
 
 class Neuron():
-    def __init__(self) -> None:
+
+    def __init__(self, numberOfWeights:int, seed = None) -> None:
         self.neuronInput = []
         self.neuronOutput = None
-
-    def updateNeuronInput(self, neuronInput) -> None:
-        self.neuronInput = neuronInput
-
-    def updateNeuronOutput(self, newNeuronOutput) -> None:
-        self.neuronOutput = newNeuronOutput
-
-    def getNeuronOutput(self):
-        return self.neuronOutput
-
-class HiddenNeuron(Neuron):
-    """
-    Neuron class
-    - the lowest level of a neural network
-    - contains a structure and 
-    """
-    def __init__(self, numberOfWeights:int, seed = None) -> None:
-        super().__init__()
         np.random.seed(seed)
         self.weights = generateWeights(numberOfWeights, seed)
         self.bias = np.random.random()*0.1
@@ -33,38 +16,48 @@ class HiddenNeuron(Neuron):
     def updateWeights(self, newWeights:list) -> None:
         for weightIndex in range(0, len(newWeights)):
             self.weights[weightIndex] = newWeights[weightIndex]
+
     def updateBias(self, newBias) -> None:
         self.bias = newBias
+
     def updateNeuronValue(self, neuronValue) -> None:
         self.neuronValue = neuronValue
 
     def getNeuronValue(self):
         return self.neuronValue
+    
     def getWeights(self):
         return self.weights
+    
     def getBias(self):
         return self.bias
+    
     def getPrimeValue(self):
         return self.neuronPrime
+
+    def updateNeuronInput(self, neuronInput) -> None:
+        self.neuronInput = neuronInput
+        weightedSum = 0
+        for input, weight in zip(self.neuronInput, self.weights):
+            weightedSum = weightedSum + input * weight
+        weightedSum = weightedSum + self.bias
+        self.neuronOutput = weightedSum
+
+    def getNeuronOutput(self):
+        return self.neuronOutput
 
     def activate(self, activationType) -> None:
         if activationType == "Step":
             self.neuronOutput = unitStep(self.neuronValue)
-        elif activationType == "Sigmoid":
-            self.neuronOutput = sigmoid(self.neuronValue)
-        elif activationType == "Tanh":
-            self.neuronOutput = tanh(self.neuronValue)
-        elif activationType == "ReLu":
-            self.neuronOutput = relu(self.neuronValue)
-
-    def activatePrime(self, activationType) -> None:
-        if activationType == "Step":
             self.neuronPrime = unitStepPrime(self.neuronValue)
         elif activationType == "Sigmoid":
+            self.neuronOutput = sigmoid(self.neuronValue)
             self.neuronPrime = sigmoidPrime(self.neuronValue)
         elif activationType == "Tanh":
+            self.neuronOutput = tanh(self.neuronValue)
             self.neuronPrime = tanhPrime(self.neuronValue)
         elif activationType == "ReLu":
+            self.neuronOutput = relu(self.neuronValue)
             self.neuronPrime = reluPrime(self.neuronValue)
 
 def generateWeights(numberOfWeights, seed = None) -> list:
