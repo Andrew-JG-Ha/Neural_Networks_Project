@@ -2,10 +2,12 @@ from Neuron import *
 import math
 
 class Layer():
-    def __init__(self, layerType:str) -> None:
+    def __init__(self, layerType:str, numParameters:int) -> None:
         self.layerInput = []
+        self.numParameters = numParameters
         self.layerType = layerType
         self.layerOutput = []
+        self.layer = []
 
     def getLayerType(self):
         return self.layerType
@@ -16,6 +18,9 @@ class Layer():
     def getLayerOutput(self):
         return self.layerOutput
     
+    def getNumLines(self):
+        return self.numParameters
+
     def updateInputLayer(self, newInputs:list):
         self.layerInput = newInputs
         if (self.layerType == "input"):
@@ -29,8 +34,8 @@ class HiddenLayer(Layer):
     """
     Layer of Neurons 
     """
-    def __init__(self, layerType:str, numberOfNeurons:int, numberOfPriorNeurons:int, learningRate:float, seed = None) -> None:
-        super().__init__(layerType)
+    def __init__(self, layerType:str, numberOfNeurons:int, numberOfPriorNeurons:int, learningRate:float = 0.08, seed = None) -> None:
+        super().__init__(layerType, numberOfNeurons)
         self.learningRate = learningRate
         if self.layerType != "Input":
             self.layer = [Neuron(numberOfPriorNeurons, layerType, seed) for neuron in range(0, numberOfNeurons)]

@@ -31,6 +31,9 @@ class Neuron():
 
     def getActivatedOutput(self):
         return self.activatedOutput
+    
+    def getNeuronPrimeValue(self):
+        return self.neuronPrime
 
     def updateNeuronInput(self, neuronInput) -> None:
         self.neuronInput = neuronInput
