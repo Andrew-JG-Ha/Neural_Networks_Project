@@ -1,10 +1,3 @@
-"""
-http://neuralnetworksanddeeplearning.com/chap2.html
-https://towardsdatascience.com/math-neural-network-from-scratch-in-python-d6da9f29ce65
-https://www.youtube.com/watch?v=0e0z28wAWfg
-https://builtin.com/machine-learning/backpropagation-neural-network
-https://www.youtube.com/watch?v=9RN2Wr8xvro
-"""
 
 from Layer import *
 
