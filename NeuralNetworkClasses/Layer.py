@@ -40,13 +40,13 @@ class HiddenLayer(Layer):
         if self.layerType != "Input":
             self.layer = [Neuron(numberOfPriorNeurons, layerType, seed) for neuron in range(0, numberOfNeurons)]
         
-    def updateLayerWeights(self, newWeights:list):
-        for neuron, weights in zip(self.layer, newWeights):
-            neuron.updateWeights([(oldWeight - self.learningRate*newWeight) for oldWeight, newWeight in zip(weights, newWeights)])
+    # def updateLayerWeights(self, newWeights:list):
+    #     for neuron, weights in zip(self.layer, newWeights):
+    #         neuron.updateWeights([(oldWeight - self.learningRate*newWeight) for oldWeight, newWeight in zip(weights, newWeights)])
     
-    def updateLayerBias(self, newBiases:list):
-        for neuron, bias in zip(self.layer, newBiases):
-            neuron.updateBias(neuron.getBias - self.learningRate*bias)
+    # def updateLayerBias(self, newBiases:list):
+    #     for neuron, bias in zip(self.layer, newBiases):
+    #         neuron.updateBias(neuron.getBias - self.learningRate*bias)
 
     def updateInputLayer(self, newInputs:list):
         if (self.layerType == "ReLu" or self.layerType == "Sigmoid" or self.layerType == "Tanh" or self.layerType == "Step"):
