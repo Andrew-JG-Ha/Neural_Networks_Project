@@ -9,7 +9,7 @@ class Neuron():
         self.activationType = activationType
         np.random.seed(seed)
         self.weights = generateWeights(numberOfWeights, seed)
-        self.bias = np.random.random()*0.1
+        self.bias = np.random.random()
         self.activatedOutput = None
         self.neuronPrime = None
 
@@ -104,3 +104,4 @@ def reluPrime(input, alpha = 0.01):
         return alpha * np.exp(input)
     else:
         return 1
+    

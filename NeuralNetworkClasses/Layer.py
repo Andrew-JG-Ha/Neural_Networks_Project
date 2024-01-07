@@ -23,12 +23,15 @@ class Layer():
 
     def updateInputLayer(self, newInputs:list):
         self.layerInput = newInputs
-        if (self.layerType == "input"):
-            self.layerOutput = self.layerInput
+        if (self.layerType == "Input" or self.layerType == "Output"):
+            self.layerOutput = newInputs
         else:
             # softmax
+            # RESULT IS TOO LARGE ISSUE!?!?!?!?!
             exponentialInput = [pow(math.e, input) for input in self.layerInput]
             self.layerOutput = [input / sum(exponentialInput) for input in exponentialInput]
+
+            # self.layerOutput = [input/ sum(self.layerInput) for input in self.layerInput]
 
 class HiddenLayer(Layer):
     """
